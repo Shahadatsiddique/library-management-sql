@@ -1,15 +1,11 @@
--- ============================================
 -- LIBRARY MANAGEMENT SYSTEM
--- ============================================
 
 -- 1. Create Database
 -- CREATE DATABASE library;
 USE library;
 
 
--- ============================================
--- 2. BOOKS TABLE
--- ============================================
+-- ("BOOKS TABLE")
 
 -- CREATE TABLE Books (
     -- book_id INT PRIMARY KEY,
@@ -19,7 +15,6 @@ USE library;
 --     total_copies INT,
 --     available_copies INT
 -- );
-
 -- Insert Books
 -- INSERT INTO Books
 -- (book_id, title, author, genre, total_copies, available_copies)
@@ -31,9 +26,8 @@ USE library;
 -- (5, 'Python Crash Course', 'Eric Matthes', 'Technology', 4, 2);
 
 
--- ============================================
--- 3. MEMBERS TABLE
--- ============================================
+
+-- ("MEMBERS TABLE")
 
 -- CREATE TABLE Members (
 --     member_id INT PRIMARY KEY,
@@ -41,7 +35,6 @@ USE library;
 --     email VARCHAR(50),
 --     join_date DATE
 -- );
-
 -- Insert Members
 -- INSERT INTO Members
 -- (member_id, name, email, join_date)
@@ -52,9 +45,7 @@ USE library;
 -- (104, 'Sneha Roy', 'sneha@email.com', '2024-03-20');
 
 
--- ============================================
--- 4. ISSUED BOOKS TABLE
--- ============================================
+-- ("ISSUED BOOKS TABLE")
 
 -- CREATE TABLE Issued_Books (
 --     issue_id INT PRIMARY KEY,
@@ -69,7 +60,6 @@ USE library;
 --     FOREIGN KEY (member_id)
 --         REFERENCES Members(member_id)
 -- );
-
 -- Insert Issued Books
 -- INSERT INTO Issued_Books
 -- (issue_id, book_id, member_id, issue_date, return_date)
@@ -81,9 +71,8 @@ USE library;
 -- (1005, 5, 101, '2024-05-12', NULL);
 
 
--- ============================================
--- 5. FINES TABLE
--- ============================================
+
+-- ("FINES TABLE")
 
 -- CREATE TABLE Fines (
 --     fine_id INT PRIMARY KEY,
@@ -94,7 +83,6 @@ USE library;
 --     FOREIGN KEY (issue_id)
 --         REFERENCES Issued_Books(issue_id)
 -- );
-
 -- Insert Fines
 -- INSERT INTO Fines
 -- (fine_id, issue_id, amount, paid)
@@ -103,13 +91,10 @@ USE library;
 -- (2, 1001, 20.00, FALSE);
 
 
--- ============================================
--- 6. SQL QUERIES
--- ============================================
+-- SQL QUERIES
 
 -- Query 1:
 -- Find the total number of books issued by each member
-
 SELECT
     m.name,
     COUNT(i.issue_id) AS total_books
@@ -121,7 +106,6 @@ GROUP BY m.name;
 
 -- Query 2:
 -- Find books having exactly 2 available copies
-
 SELECT
     author,title
 FROM Books
@@ -130,7 +114,6 @@ WHERE available_copies = 2;
 
 -- Query 3:
 -- Rank books within each genre based on total copies using functions
-
 SELECT
     genre,
     title,
@@ -146,9 +129,9 @@ SELECT
     )as d_rnk
 FROM Books;
 
+
 -- Query 4:
 -- Divide the books into groups by genre, then rank the books inside each group
-
 SELECT
     genre,
     title,
@@ -159,9 +142,9 @@ SELECT
     ) AS genre_rank
 FROM Books;
 
+
 -- Query 5:
 --  Which books are the most available within each genre?
-
 SELECT
     genre,
     title,
@@ -170,22 +153,3 @@ SELECT
         ORDER BY available_copies DESC
     ) AS availability_rank
 FROM Books;
-
--- Query 6:
--- finding total_copies of each genre using cte
-WITH RankedBooks AS (
-    SELECT
-        genre,
-        title,
-        total_copies,
-        RANK() OVER (
-            ORDER BY total_copies DESC
-        ) AS rnk
-    FROM Books
-)
-
-SELECT
-    genre,
-    title,
-    total_copies
-FROM RankedBooks
