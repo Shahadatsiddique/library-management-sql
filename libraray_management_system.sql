@@ -95,6 +95,7 @@ USE library;
 
 -- Query 1:
 -- Find the total number of books issued by each member
+
 SELECT
     m.name,
     COUNT(i.issue_id) AS total_books
@@ -106,6 +107,7 @@ GROUP BY m.name;
 
 -- Query 2:
 -- Find books having exactly 2 available copies
+
 SELECT
     author,title
 FROM Books
@@ -114,6 +116,7 @@ WHERE available_copies = 2;
 
 -- Query 3:
 -- Rank books within each genre based on total copies using functions
+
 SELECT
     genre,
     title,
@@ -132,6 +135,7 @@ FROM Books;
 
 -- Query 4:
 -- Divide the books into groups by genre, then rank the books inside each group
+
 SELECT
     genre,
     title,
@@ -145,6 +149,7 @@ FROM Books;
 
 -- Query 5:
 --  Which books are the most available within each genre?
+
 SELECT
     genre,
     title,
@@ -153,3 +158,66 @@ SELECT
         ORDER BY available_copies DESC
     ) AS availability_rank
 FROM Books;
+
+
+-- Query 5:
+-- finding total_copies of each genre using cte
+
+WITH RankedBooks AS (
+    SELECT
+        genre,
+        title,
+        total_copies,
+        RANK() OVER (
+            ORDER BY total_copies DESC
+        ) AS rnk
+    FROM Books
+SELECT
+    genre,
+    title,
+    total_copies,
+    rnk
+FROM RankedBooks
+	
+
+-- Query 7
+-- Show books having at least a given number of total copies.
+	
+DELIMITER $$
+
+CREATE PROCEDURE GetBooks(IN min_copies INT)
+BEGIN
+    SELECT
+        genre,
+        title,
+        total_copies
+    FROM Books
+    WHERE total_copies >= min_copies
+    ORDER BY total_copies DESC;
+END $$
+
+DELIMITER ;
+
+call GetBooks(4)
+
+
+-- Query 6
+-- show rank of book who has most number of copies
+	
+DELIMITER $$
+
+CREATE PROCEDURE GetBooksRankedByCopies()
+BEGIN
+    SELECT
+        genre,
+        title,
+        total_copies,
+        RANK() OVER (
+            ORDER BY total_copies DESC
+        ) AS copy_rank
+    FROM Books;
+END $$
+
+DELIMITER ;
+
+CALL GetBooksRankedByCopies();
