@@ -100,13 +100,13 @@ SELECT
     m.name,
     COUNT(i.issue_id) AS total_books
 FROM Members m
-JOIN Issued_Books i
+LEFT JOIN Issued_Books i
     ON m.member_id = i.member_id
-GROUP BY m.name;
+GROUP BY m.member_id, m.name;
 
 
 -- Query 2:
--- Find books having exactly 2 available copies
+-- Find the titles and authors of book having exactly 2 available copies
 
 SELECT
     author,title
@@ -114,8 +114,24 @@ FROM Books
 WHERE available_copies = 2;
 
 
+
 -- Query 3:
--- Rank books within each genre based on total copies using functions
+-- Divide books into groups by genre and rank the books within each genre based on total copies.
+
+SELECT
+    genre,
+    title,
+    total_copies,
+    RANK() OVER (
+        PARTITION BY genre
+        ORDER BY total_copies DESC
+    ) AS genre_rank
+FROM Books;
+
+
+
+-- Query 4:
+-- Rank all books across the library based on total copies using functions
 
 SELECT
     genre,
@@ -133,20 +149,6 @@ SELECT
 FROM Books;
 
 
--- Query 4:
--- Divide the books into groups by genre, then rank the books inside each group
-
-SELECT
-    genre,
-    title,
-    total_copies,
-    RANK() OVER (
-        PARTITION BY genre
-        ORDER BY total_copies DESC
-    ) AS genre_rank
-FROM Books;
-
-
 -- Query 5:
 --  Which books are the most available within each genre?
 
@@ -160,7 +162,7 @@ SELECT
 FROM Books;
 
 
--- Query 5:
+-- Query 6:
 -- finding total_copies of each genre using cte
 
 WITH RankedBooks AS (
@@ -181,10 +183,9 @@ FROM RankedBooks
 	
 
 -- Query 7
--- Show books having at least a given number of total copies.
+-- Show books having at least a given number of total copies using stored procedure.
 	
 DELIMITER $$
-
 CREATE PROCEDURE GetBooks(IN min_copies INT)
 BEGIN
     SELECT
@@ -195,17 +196,15 @@ BEGIN
     WHERE total_copies >= min_copies
     ORDER BY total_copies DESC;
 END $$
-
 DELIMITER ;
 
 call GetBooks(4)
 
 
--- Query 6
--- show rank of book who has most number of copies
+-- Query 8
+-- show rank of book who has most number of copies using stored & procedure
 	
 DELIMITER $$
-
 CREATE PROCEDURE GetBooksRankedByCopies()
 BEGIN
     SELECT
@@ -217,7 +216,9 @@ BEGIN
         ) AS copy_rank
     FROM Books;
 END $$
-
 DELIMITER ;
 
 CALL GetBooksRankedByCopies();
+
+
+
