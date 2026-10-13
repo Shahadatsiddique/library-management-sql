@@ -174,17 +174,18 @@ WITH RankedBooks AS (
             ORDER BY total_copies DESC
         ) AS rnk
     FROM Books
+)
 SELECT
     genre,
     title,
     total_copies,
     rnk
-FROM RankedBooks
+FROM RankedBooks;
 	
 
 -- Query 7
 -- Show books having at least a given number of total copies using stored procedure.
-	
+
 DELIMITER $$
 CREATE PROCEDURE GetBooks(IN min_copies INT)
 BEGIN
@@ -198,7 +199,7 @@ BEGIN
 END $$
 DELIMITER ;
 
-call GetBooks(4)
+call GetBooks(4);
 
 
 -- Query 8
@@ -219,6 +220,3 @@ END $$
 DELIMITER ;
 
 CALL GetBooksRankedByCopies();
-
-
-
