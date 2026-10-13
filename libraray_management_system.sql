@@ -149,39 +149,40 @@ SELECT
 FROM Books;
 
 
+
 -- Query 5:
---  Which books are the most available within each genre?
+-- Rank books within each genre based on available copies to identify the most available books in each genre.
 
 SELECT
     genre,
     title,
     available_copies,
     RANK() OVER (
+        PARTITION BY genre
         ORDER BY available_copies DESC
     ) AS availability_rank
 FROM Books;
 
 
+
 -- Query 6:
 -- finding total_copies of each genre using cte
 
-WITH RankedBooks AS (
+WITH GenreCopies AS (
     SELECT
         genre,
-        title,
-        total_copies,
-        RANK() OVER (
-            ORDER BY total_copies DESC
-        ) AS rnk
+        sum(total_copies) as total_copies
     FROM Books
+    group by genre
 )
 SELECT
     genre,
-    title,
-    total_copies,
-    rnk
-FROM RankedBooks;
+    total_copies
+FROM GenreCopies
+order by total_copies desc;
+
 	
+    
 
 -- Query 7
 -- Show books having at least a given number of total copies using stored procedure.
@@ -203,7 +204,7 @@ call GetBooks(4);
 
 
 -- Query 8
--- show rank of book who has most number of copies using stored & procedure
+-- Rank all books based on total copies using a stored procedure
 	
 DELIMITER $$
 CREATE PROCEDURE GetBooksRankedByCopies()
@@ -219,4 +220,4 @@ BEGIN
 END $$
 DELIMITER ;
 
-CALL GetBooksRankedByCopies();
+CALL GetBooksRankedByCopies(); 
